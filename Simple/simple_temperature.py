@@ -6,7 +6,7 @@ import datetime
 import time
 
 
-data = pd.read_csv("TempTullinge.csv", sep=";", header=0)
+data = pd.read_csv("data/TempTullinge.csv", sep=";", header=0)
 data['date'] = pd.to_datetime(data['date'], format='%d/%m/%y')
 data['date'] = data['date'].map(datetime.datetime.toordinal)
 data['date'] = data['date'] - 733773
