@@ -50,39 +50,43 @@ def preprocess(df):
 xt, yt = preprocess(df_train)
 xd, yd = preprocess(df_dev)
 
+Seed = 42
+torch.manual_seed(Seed)
+torch.cuda.manual_seed(Seed)
+np.random.seed(Seed)
 
 use_batch_norm = True
 class Net(torch.nn.Module):
     def __init__(self, D_in, H, D_out):
         super(Net, self).__init__()
         self.linear1 = torch.nn.Linear(D_in, H, bias=not use_batch_norm)
-        self.relu1 = torch.nn.ReLU()
         self.bn1 = torch.nn.BatchNorm1d(H)
+        self.relu1 = torch.nn.ReLU()
         self.linear2 = torch.nn.Linear(H, H, bias=not use_batch_norm)
-        self.relu2 = torch.nn.ReLU()
         self.bn2 = torch.nn.BatchNorm1d(H)
+        self.relu2 = torch.nn.ReLU()
         self.linear3 = torch.nn.Linear(H, H, bias=not use_batch_norm)
-        self.relu3 = torch.nn.ReLU()
         self.bn3 = torch.nn.BatchNorm1d(H)
+        self.relu3 = torch.nn.ReLU()
         self.linear4 = torch.nn.Linear(H, D_out)
 
     def forward(self, x):
         x = self.linear1(x)
-        x = self.relu1(x)
         x = self.bn1(x) if use_batch_norm else x
+        x = self.relu1(x)
         x = self.linear2(x)
-        x = self.relu2(x)
         x = self.bn2(x) if use_batch_norm else x
+        x = self.relu2(x)
         x = self.linear3(x)
-        x = self.relu3(x)
         x = self.bn3(x) if use_batch_norm else x
+        x = self.relu3(x)
         x = self.linear4(x)
         return x
 
 model = Net(xt.shape[1], 300, 3).to(device)
 
 loss_fn = torch.nn.CrossEntropyLoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-4, weight_decay=1e-4)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.0001, weight_decay=1e-3)
 
 iters = 100_000
 batch_size = 32
